@@ -16,3 +16,9 @@ client_script {
 server_script {
    'server.lua',
 }
+
+files {
+   'skydim_timecycle.xml',
+}
+
+data_file 'TIMECYCLEMOD_FILE' 'skydim_timecycle.xml'

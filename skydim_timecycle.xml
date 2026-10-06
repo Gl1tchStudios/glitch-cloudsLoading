@@ -1,0 +1,12 @@
+<timecycle_modifier_data version="1.000000">
+<modifier name="glitch_clouds_skydim" numMods="8" userFlags="0">
+    <postfx_exposure>-0.250 0.000</postfx_exposure>
+    <postfx_intensity_bloom>0.300 0.000</postfx_intensity_bloom>
+    <fog_start>4000.000 0.000</fog_start>
+    <fog_density>0.000 0.000</fog_density>
+    <fog_alpha>0.000 0.000</fog_alpha>
+    <fog_haze_density>0.000 0.000</fog_haze_density>
+    <fog_haze_alpha>0.000 0.000</fog_haze_alpha>
+    <fogray_intensity>0.000 0.000</fogray_intensity>
+</modifier>
+</timecycle_modifier_data>

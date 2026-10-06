@@ -108,6 +108,36 @@ local function lockPlayer()
             Wait(0)
         end
     end)
+
+    CreateThread(function()
+        local maxDim = math.min(math.max(tonumber(Config.SkyDim) or 0.0, 0.0), 1.0)
+        if maxDim <= 0.0 then return end
+
+        local step = maxDim / math.max(tonumber(Config.SkyDimFade) or 1, 1)
+        local dim = 0.0
+        local lastFrame = GetGameTimer()
+
+        repeat
+            local now = GetGameTimer()
+            local delta = (now - lastFrame) * step
+            lastFrame = now
+
+            if isTransitioning and IsPlayerSwitchInProgress() then
+                dim = math.min(dim + delta, maxDim)
+            else
+                dim = math.max(dim - delta, 0.0)
+            end
+
+            if dim > 0.0 then
+                SetExtraTimecycleModifier('glitch_clouds_skydim')
+                SetExtraTimecycleModifierStrength(dim)
+            end
+
+            Wait(0)
+        until not isTransitioning and dim <= 0.0
+
+        ClearExtraTimecycleModifier()
+    end)
 end
 
 local function releasePlayer()
@@ -211,9 +241,8 @@ SkySwoopDown = function(coords, hold)
     while isClimbing do Wait(0) end
 
     local pos, heading = readCoords(coords)
-    local reachedAt = skyReachedAt
 
-    if not reachedAt then
+    if not skyReachedAt then
         if pos and not isTransitioning then
             movePlayer(pos, heading, ARRIVAL_TOLERANCE)
             unfreeze()
@@ -222,9 +251,9 @@ SkySwoopDown = function(coords, hold)
     end
 
     skyReachedAt = nil
+    local holdUntil = GetGameTimer() + (tonumber(hold) or 0)
     if pos then movePlayer(pos, heading, ARRIVAL_TOLERANCE) end
 
-    local holdUntil = reachedAt + (tonumber(hold) or 0)
     while GetGameTimer() < holdUntil do Wait(0) end
 
     setSpinner(false)
@@ -293,7 +322,9 @@ if Config.TestCommand then
 end
 
 AddEventHandler('onResourceStop', function(resource)
-    if resource ~= GetCurrentResourceName() or not isTransitioning then return end
+    if resource ~= GetCurrentResourceName() then return end
+    ClearExtraTimecycleModifier()
+    if not isTransitioning then return end
     if IsPlayerSwitchInProgress() then StopPlayerSwitch() end
     releasePlayer()
 end)
